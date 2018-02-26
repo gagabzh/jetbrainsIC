@@ -1,0 +1,53 @@
+db:
+    image: postgres
+    ports:
+     - "5432:5432"
+    environment:
+     - "POSTGRES_PASSWORD=gagAdmin"
+
+hub-server-instance:
+    image: jetbrains/hub:2017.4.8602
+    user: root
+    ports:
+    - "8110:8080"
+    volumes:
+    - "C:/home/hub/data:/opt/hub/data"
+    - "C:/home/hub/conf:/opt/hub/conf"
+    - "C:/var/log/hub:/opt/hub/logs"
+    - "C:/var/backup/hub:/opt/hub/backups"
+
+upsource-server-instance:
+    image: jetbrains/upsource:2017.3.2774
+    user: root
+    ports:
+    - "8113:8080"
+    volumes:
+    - "C:/home/upsource/data:/opt/upsource/data"
+    - "C:/home/upsource/conf:/opt/upsource/conf"
+    - "C:/var/log/upsource:/opt/upsource/logs"
+    - "C:/var/backup/upsource:/opt/upsource/backups"
+    links:
+    - "hub-server-instance:hub"
+
+teamcity-server-instance:
+    image: jetbrains/teamcity-server
+    user: root
+    ports:
+    - "8111:8111"
+    volumes:
+    - "C:/home/teamcity/data:/data/teamcity_server/datadir"
+    - "C:/var/log/teamcity:/opt/upsource/logs"
+    links:
+    - "db:database"
+    - "hub-server-instance:hub"
+
+youtrack-server-instance:
+    image: uniplug/youtrack
+    user: root
+    ports:
+    - "8112:80"
+    volumes:
+    - "C:/home/youtrack/data:/opt/youtrack/data"
+    - "C:/var/backup/youtrack:/opt/youtrack/backup"
+    links:
+    - "hub-server-instance:hub"
